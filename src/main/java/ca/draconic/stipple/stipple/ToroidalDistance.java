@@ -1,4 +1,4 @@
-package ca.draconic.stipple;
+package ca.draconic.stipple.stipple;
 
 import com.vividsolutions.jts.geom.Coordinate;
 

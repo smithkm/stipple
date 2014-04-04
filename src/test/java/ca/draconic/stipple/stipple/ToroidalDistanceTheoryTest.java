@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ca.draconic.stipple;
+package ca.draconic.stipple.stipple;
 
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
@@ -12,6 +12,8 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
+
+import ca.draconic.stipple.stipple.ToroidalDistance;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
