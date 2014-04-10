@@ -2,30 +2,12 @@ package ca.draconic.stipple.wangtiles;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.Spliterator;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToIntFunction;
-import java.util.function.ToLongFunction;
-import java.util.stream.Collector;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
-import java.util.stream.Stream;
+
 
 public class TileSet implements Iterable<Tile> {
     final int colours;
@@ -87,8 +69,6 @@ public class TileSet implements Iterable<Tile> {
                 usable.add(t);
             }
         }
-        
-        assert(usable.size()==tiles.size()/colours);
         
         return(usable.get(rand.nextInt(usable.size())));
     }
