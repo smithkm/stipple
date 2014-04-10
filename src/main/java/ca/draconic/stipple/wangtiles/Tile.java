@@ -2,8 +2,11 @@ package ca.draconic.stipple.wangtiles;
 
 import com.google.common.base.Preconditions;
 
-public class Tile {
+public class Tile<T extends Object> {
+
     final TileSet set;
+    
+    T data;
     
     final int up, down, left, right;
     
@@ -23,4 +26,12 @@ public class Tile {
         this.right = right;
     }
     
+    public T getData() {
+        return data;
+    }
+
+    protected void setData(T data) {
+        this.data = data;
+    }
+
 }

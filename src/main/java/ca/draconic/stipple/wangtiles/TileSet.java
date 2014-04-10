@@ -1,6 +1,8 @@
 package ca.draconic.stipple.wangtiles;
 
+import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -9,18 +11,18 @@ import java.util.Random;
 import java.util.Set;
 
 
-public class TileSet implements Iterable<Tile> {
+public class TileSet<T extends Object> {
     final int colours;
-    final Set<Tile> tiles;
+    final Set<Tile<T>> tiles;
     
     public boolean isColour(int c) {
         return c>=0 && c<colours;
     }
 
-    protected TileSet(int colours, Set<Tile> tiles) {
+    protected TileSet(int colours, Set<Tile<T>> tiles) {
         super();
         this.colours = colours;
-        this.tiles = new HashSet<Tile>(tiles);
+        this.tiles = new HashSet<>(tiles);
     }
     protected TileSet(int colours) {
         this(colours, Collections.emptySet());
@@ -33,15 +35,15 @@ public class TileSet implements Iterable<Tile> {
      * @param rand
      * @return
      */
-    static TileSet generate(int colours, int n, Random rand) {
-        TileSet set = new TileSet(colours);
+    static<T extends Object> TileSet<T> generate(int colours, int n, Random rand) {
+        TileSet<T> set = new TileSet<T>(colours);
         for(int up=0; up<colours; up++) {
             for(int left=0; left<colours; left++) {
                 for(int i=0; i<n;) {
                     int right = getColour(colours, left, rand, true);
                     int down = getColour(colours, up, rand, true);
 
-                    if(set.tiles.add(new Tile(set, up, down, left, right))) i++;
+                    if(set.tiles.add(new Tile<T>(set, up, down, left, right))) i++;
                 }
             }
         }
@@ -62,9 +64,9 @@ public class TileSet implements Iterable<Tile> {
         return col;
     }
     
-    public Tile getTile(Integer up, Integer left, Random rand) {
-        List<Tile> usable = new ArrayList<>(tiles.size()/colours);
-        for(Tile t: this) {
+    public Tile<T> getTile(Integer up, Integer left, Random rand) {
+        List<Tile<T>> usable = new ArrayList<>(tiles.size()/colours);
+        for(Tile<T> t: this.tiles) {
             if((up==null || t.up==up) && (left==null || t.left==left)) {
                 usable.add(t);
             }
@@ -73,12 +75,16 @@ public class TileSet implements Iterable<Tile> {
         return(usable.get(rand.nextInt(usable.size())));
     }
     
-    public Iterable<PositionedTile> getTiling(final int width, final int height, final Random rand) {
-        return new Iterable<PositionedTile>() {
+    public Set<Tile<T>> getTiles() {
+        return Collections.unmodifiableSet(tiles);
+    }
+    
+    public Collection<PositionedTile<T>> getTiling(final int width, final int height, final Random rand) {
+        return new AbstractCollection<PositionedTile<T>>() {
             
             @Override
-            public Iterator<PositionedTile> iterator() {
-                return new Iterator<PositionedTile>() {
+            public Iterator<PositionedTile<T>> iterator() {
+                return new Iterator<PositionedTile<T>>() {
                     int x = 0;
                     int y = 0;
                     Integer[] previousRow = new Integer[width];
@@ -90,14 +96,14 @@ public class TileSet implements Iterable<Tile> {
                     }
 
                     @Override
-                    public PositionedTile next() {
+                    public PositionedTile<T> next() {
                         Integer previousUp=previousRow[x];
                         
-                        Tile t = getTile(previousUp, previousColour, rand);
+                        Tile<T> t = getTile(previousUp, previousColour, rand);
                         previousRow[x]=t.down;
                         previousColour=t.right;
                         
-                        PositionedTile p = new PositionedTile(t, x, y);
+                        PositionedTile<T> p = new PositionedTile<>(t, x, y);
                         
                         x++;
                         if(x>=width) {
@@ -111,12 +117,12 @@ public class TileSet implements Iterable<Tile> {
                     
                 };
             }
+
+            @Override
+            public int size() {
+                return width*height;
+            }
             
         };
-    }
-    
-    @Override
-    public Iterator<Tile> iterator() {
-        return tiles.iterator();
     }
 }
