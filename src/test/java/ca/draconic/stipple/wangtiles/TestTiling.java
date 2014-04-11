@@ -39,17 +39,21 @@ public class TestTiling {
         out.println("<svg width=\"400px\" height=\"150px\" version=\"1.1\"");
         out.println("     xmlns=\"http://www.w3.org/2000/svg\"");
         out.println("     xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
+        
+        out.print("<filter id='blur'><feGaussianBlur stdDeviation='12.5' /></filter>");
+        out.print("<clipPath id='tileClip'><rect x='-50' y='-50' width='100' height='100' /></clipPath>");
         int id=0;
-        String format = "<path d='M -50 -50 L 0 0 L 50 -50 z' transform='rotate(%d)' style='fill:%s' />";
+        String format = "<path d='M -100 -100 L 0 0 L 100 -100 z' transform='rotate(%d)' style='fill:%s' />";
         for(Tile<String> t:set.getTiles()) {
             t.setData(String.format("tile%d", id));
             out.printf("<symbol id='%s'>", t.getData());
+            out.print("<g style='filter:url(#blur)' clip-path='url(#tileClip)'>");
             out.printf(format, 0,   colours[t.up]);
             out.printf(format, 180, colours[t.down]);
             out.printf(format, 90,  colours[t.right]);
             out.printf(format, -90, colours[t.left]);
-            out.print("<rect x='-50' y='-50' width='100' height='100' style='fill:none;stroke:#000000;stroke-width:1px;'/>");
-            out.printf("</symbol>", t.getData());
+            out.print("</g>");
+            out.println("</symbol>");
             id++;
         }
         
