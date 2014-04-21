@@ -24,7 +24,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 @RunWith(Theories.class)
 public class ToroidalDistanceTheoryTest {
 
-    ToroidalDistance distance;
+    DistanceMetric distance;
     double width;
     double height;
     double diagonal;
@@ -61,24 +61,24 @@ public class ToroidalDistanceTheoryTest {
     public void theorySamePointZero(Coordinate c1, Coordinate c2) {
         assumeThat(c1, equalTo(c2));
         
-        assertThat(distance.distance(c1, c2), equalTo(0.0d));
+        assertThat(distance.applyAsDouble(c1, c2), equalTo(0.0d));
     }
     
     @Theory
     public void theoryDistanceLessThanHalfDiagonal(Coordinate c1, Coordinate c2) {
-        assertThat(distance.distance(c1, c2), lessThanOrEqualTo(diagonal/2));
+        assertThat(distance.applyAsDouble(c1, c2), lessThanOrEqualTo(diagonal/2));
     }
     
     @Theory
     public void theoryEuclideanClosePointsSameAsEuclidean(Coordinate c1, Coordinate c2) {
         assumeThat(c1.distance(c2), lessThan(diagonal/4));
-        assertThat(distance.distance(c1, c2), closeTo(c1.distance(c2), 0.0000001));
+        assertThat(distance.applyAsDouble(c1, c2), closeTo(c1.distance(c2), 0.0000001));
     }
     
     @Theory
     public void theoryEuclideanDistantPointsHaveShorterTheEuclideanDistance(Coordinate c1, Coordinate c2) {
         assumeThat(c1.distance(c2), greaterThan(diagonal*3/4));
-        assertThat(distance.distance(c1, c2), lessThanOrEqualTo(diagonal/2));
+        assertThat(distance.applyAsDouble(c1, c2), lessThanOrEqualTo(diagonal/2));
     }
 
 }
