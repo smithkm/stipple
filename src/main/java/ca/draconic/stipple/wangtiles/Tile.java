@@ -4,13 +4,13 @@ import com.google.common.base.Preconditions;
 
 public class Tile<T extends Object> {
 
-    final TileSet set;
+    final TileSet<T> set;
     
     T data;
     
     final int up, down, left, right;
     
-    protected Tile(TileSet set, int up, int down, int left, int right) {
+    protected Tile(TileSet<T> set, int up, int down, int left, int right) {
         super();
         
         Preconditions.checkNotNull(set);
@@ -24,6 +24,11 @@ public class Tile<T extends Object> {
         this.down = down;
         this.left = left;
         this.right = right;
+    }
+    
+    protected Tile(TileSet<T> set, Tile<T> template) {
+        this(set, template.up, template.down, template.left, template.right);
+        this.data = template.data;
     }
     
     public T getData() {

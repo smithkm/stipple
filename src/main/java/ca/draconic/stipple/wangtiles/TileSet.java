@@ -19,7 +19,7 @@ public class TileSet<T extends Object> {
         return c>=0 && c<colours;
     }
 
-    protected TileSet(int colours, Set<Tile<T>> tiles) {
+    protected TileSet(int colours, Set<? extends Tile<T>> tiles) {
         super();
         this.colours = colours;
         this.tiles = new HashSet<>(tiles);
@@ -37,11 +37,14 @@ public class TileSet<T extends Object> {
      */
     static<T extends Object> TileSet<T> generate(int colours, int n, Random rand) {
         TileSet<T> set = new TileSet<T>(colours);
+        int[] downCount = new int[colours];
+        int[] rightCount = new int[colours];
+        
         for(int up=0; up<colours; up++) {
             for(int left=0; left<colours; left++) {
                 for(int i=0; i<n;) {
-                    int right = getColour(colours, left, rand, true);
-                    int down = getColour(colours, up, rand, true);
+                    int right = getColour(colours, left, rand, false, rightCount, n*colours);
+                    int down = getColour(colours, up, rand, false, downCount, n*colours);
 
                     if(set.tiles.add(new Tile<T>(set, up, down, left, right))) i++;
                 }
@@ -63,6 +66,17 @@ public class TileSet<T extends Object> {
         }
         return col;
     }
+    static private int getColour(int colours, int opposite, Random rand, boolean noMatchingOpposites, int[] colourCount, int maxOfColour) {
+        ArrayList<Integer> potential = new ArrayList<>(colours);
+        for(int c=0; c<colours; c++) {
+            if(colourCount[c]<maxOfColour)
+                potential.add(c);
+        }
+        assert(!potential.isEmpty());
+        int result = potential.get(rand.nextInt(potential.size()));
+        colourCount[result]++;
+        return result;
+    }
     
     public Tile<T> getTile(Integer up, Integer left, Random rand) {
         List<Tile<T>> usable = new ArrayList<>(tiles.size()/colours);
@@ -75,7 +89,7 @@ public class TileSet<T extends Object> {
         return(usable.get(rand.nextInt(usable.size())));
     }
     
-    public Set<Tile<T>> getTiles() {
+    public Set<?extends Tile<T>> getTiles() {
         return Collections.unmodifiableSet(tiles);
     }
     
