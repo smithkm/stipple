@@ -2,6 +2,14 @@ package ca.draconic.stipple.stipple;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
+/**
+ * Distance measured with toroidal topology.  The top edge connects to the bottom, and the left to
+ * the right.  Otherwise everything is treated as being flat.  Points outside the envelope are
+ * treated as being on other 'instances' of the tile.
+ * 
+ * @author Kevin Smith, <smithkm@draconic.ca>
+ *
+ */
 public class ToroidalDistance implements DistanceMetric<Coordinate> {
     final double width;
     final double height;
@@ -15,18 +23,30 @@ public class ToroidalDistance implements DistanceMetric<Coordinate> {
         return result;
     }
     
+    /**
+     * 
+     * @param width
+     * @param height
+     */
     public ToroidalDistance(double width, double height) {
         super();
         this.width = width;
         this.height = height;
     }
-
+    
+    /**
+     * Returns the canonical position of the given point.
+     * @param c
+     * @return
+     */
     public Coordinate clamp (Coordinate c) {
         return new Coordinate (mod(c.x, width), mod(c.y, height));
     }
     
     @Override
     public double applyAsDouble(Coordinate c1, Coordinate c2) {
+        // TODO Optimise this
+        
         c1 = clamp(c1);
         c2 = clamp(c2);
         

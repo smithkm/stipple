@@ -9,6 +9,12 @@ import com.google.common.base.Preconditions;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
+/**
+ * Generates random coordinates with a uniform distribution over a finite envelope.
+ * 
+ * @author Kevin Smith, <smithkm@draconic.ca>
+ *
+ */
 public class EuclideanUniformPointGenerator implements Supplier<Coordinate>, Serializable {
     Envelope envelope;
     
