@@ -24,7 +24,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 @RunWith(Theories.class)
 public class ToroidalDistanceTheoryTest {
 
-    DistanceMetric distance;
+    DistanceMetric<Coordinate> distance;
     double width;
     double height;
     double diagonal;
@@ -53,6 +53,8 @@ public class ToroidalDistanceTheoryTest {
             new Coordinate(-1.5,6.0),
             new Coordinate(1.5,6.0),
             new Coordinate(4.5,6.0),
+            new Coordinate(2.9,3.9),
+            new Coordinate(0.1,0.1),
             new Coordinate(1.5,2.0) //duplicate
         };
     }
