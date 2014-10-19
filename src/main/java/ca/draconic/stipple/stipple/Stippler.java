@@ -58,7 +58,7 @@ public class Stippler<Point> implements Supplier<Point>, Serializable {
      */
     public Stippler(DistanceMetric<Point> metric, Supplier<Point> generator,
             double radius, int maxTriesPerRadius, double decay, int maxPoints) {
-        this(metric, generator, decay, maxTriesPerRadius, decay, new ArrayList<>(maxPoints));
+        this(metric, generator, radius, maxTriesPerRadius, decay, new ArrayList<>(maxPoints));
     }
     
     private Stippler(DistanceMetric<Point> metric, Supplier<Point> generator,
