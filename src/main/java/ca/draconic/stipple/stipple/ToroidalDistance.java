@@ -2,7 +2,7 @@ package ca.draconic.stipple.stipple;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
-public class ToroidalDistance implements DistanceMetric {
+public class ToroidalDistance implements DistanceMetric<Coordinate> {
     final double width;
     final double height;
     
