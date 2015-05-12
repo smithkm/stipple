@@ -7,12 +7,7 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.ToDoubleFunction;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Lineal;
-import com.vividsolutions.jts.geom.MultiLineString;
 
 public class RiverModel {
     Set<Node> connected;

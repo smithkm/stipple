@@ -1,75 +1,38 @@
 package ca.draconic.stipple.stipple;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.AbstractCollection;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.triangulate.DelaunayTriangulationBuilder;
 import com.vividsolutions.jts.triangulate.VoronoiDiagramBuilder;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdge;
 import com.vividsolutions.jts.triangulate.quadedge.Vertex;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 import ca.draconic.stipple.river.Densifier;
 import ca.draconic.stipple.river.FractalSegmentInterpolator;
 import ca.draconic.stipple.river.Node;
-import ca.draconic.stipple.river.QuadEdgeUtils;
 import ca.draconic.stipple.river.RiverModel;
 import ca.draconic.stipple.svg.SVGStream;
-import ca.draconic.stipple.svg.TestSVG;
 
 public class TestStippler {
     

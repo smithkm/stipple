@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -15,7 +14,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class StippleOut {
-    public static void main(String[] args) {
+    @SuppressWarnings("unchecked")
+	public static void main(String[] args) {
         final Envelope env = new Envelope(0,100, 0,100);
         final Supplier<Coordinate> generator = new EuclideanUniformPointGenerator(env);
         final DistanceMetric<Coordinate> metric = new EuclideanDistance();
@@ -73,7 +73,8 @@ public class StippleOut {
         try( FileInputStream fileIn = new FileInputStream("/home/smithkm/stipple.dat");
                 ObjectInputStream in = new ObjectInputStream(fileIn);
                ) {
-            Stippler<Coordinate> gen = (Stippler<Coordinate>) in.readObject();
+            @SuppressWarnings("unchecked")
+			Stippler<Coordinate> gen = (Stippler<Coordinate>) in.readObject();
             return gen.getAll().toArray(new Coordinate[]{});
        } catch (ClassNotFoundException ex) {
            throw new IllegalStateException(ex);
