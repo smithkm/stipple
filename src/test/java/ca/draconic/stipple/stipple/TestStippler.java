@@ -1,9 +1,12 @@
 package ca.draconic.stipple.stipple;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.HashSet;
@@ -83,12 +86,26 @@ public class TestStippler {
         final int points = 10000;
         final int tries = 100;
         
+        final File stippleFile = new File("/home/smithkm/stipple.dat");
+        final File svgFile = new File("/home/smithkm/foo.svg");
+        
         System.err.printf("decay: %.20f \t initRadius: %f \t triesPerRadius: %d", decay, initRadius, tries).println();
 
         Stippler<Coordinate> s;
-        try(FileInputStream fin = new FileInputStream("/home/smithkm/stipple.dat");
-                ObjectInputStream oin = new ObjectInputStream(fin) ) {
-            s=(Stippler<Coordinate>) oin.readObject();
+        try {
+	        try(FileInputStream fin = new FileInputStream(stippleFile);
+	                ObjectInputStream oin = new ObjectInputStream(fin) ) {
+	            s=(Stippler<Coordinate>) oin.readObject();
+	        } catch (FileNotFoundException e) {
+	        	s=new Stippler<Coordinate>(metric, generator, initRadius, tries, decay, points);
+	        	for(int i=0; i<points; i++) {
+	        		s.get();
+	        	}
+	        	try(FileOutputStream fout = new FileOutputStream(stippleFile);
+	                    ObjectOutputStream oout = new ObjectOutputStream(fout) ) {
+	        		oout.writeObject(s);
+	        	}
+	        }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             throw new IllegalStateException(e);
@@ -99,7 +116,7 @@ public class TestStippler {
         //MultiPoint sites = fact.createMultiPoint(s.getAll().toArray(new Coordinate[]{}));
         MultiPoint sites = s.getGeometry(fact::createPoint);
        
-        try(FileOutputStream fout = new FileOutputStream("/home/smithkm/foo.svg")){
+        try(FileOutputStream fout = new FileOutputStream(svgFile)){
             SVGStream.wrap(fout, 100, 100,
                 defs->{
                     defs.marker("arrow", svg->{
