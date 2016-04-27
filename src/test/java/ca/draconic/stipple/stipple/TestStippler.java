@@ -25,19 +25,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
+import com.flowpowered.noise.module.Module;
+import com.flowpowered.noise.module.source.Perlin;
+import com.vividsolutions.jts.densify.Densifier;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
@@ -49,46 +48,15 @@ import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdge;
 import com.vividsolutions.jts.triangulate.quadedge.Vertex;
 
-import ca.draconic.stipple.river.Densifier;
-import ca.draconic.stipple.river.FractalSegmentInterpolator;
+import ca.draconic.jtstools.JTSTools;
 import ca.draconic.stipple.river.Node;
 import ca.draconic.stipple.river.RiverModel;
 import ca.draconic.stipple.svg.SVGStream;
 
 public class TestStippler {
     
-    public static <G extends Geometry> Collection<G> geometries(final GeometryCollection col, final Class<G> clazz){
-        return new AbstractCollection<G>(){
-
-            @Override
-            public Iterator<G> iterator() {
-                return new Iterator<G>() {
-                    int i=0;
-                    @Override
-                    public boolean hasNext() {
-                        return i<col.getNumGeometries();
-                    }
-                
-                    @Override
-                    public G next() {
-                        G g = (G) col.getGeometryN(i);
-                        i++;
-                        return g;
-                    }
-                    
-                };
-            }
-        
-            @Override
-            public int size() {
-                return col.getNumGeometries();
-            }
-            
-        };
-    }
-    
     public static Collection<Point> points(MultiPoint mp) {
-        return geometries(mp, Point.class);
+        return JTSTools.geometries(mp, Point.class);
     }
     
     @SuppressWarnings("unchecked")
@@ -101,7 +69,7 @@ public class TestStippler {
         final double decay = 1.0-Math.pow(2.0, -10);
         final double initRadius = Math.hypot(env.getWidth(),env.getHeight());
         
-        final int points = 10000;
+        final int points = 100000;
         final int tries = 100;
         
         final File stippleFile = new File("/home/smithkm/stipple.dat");
@@ -128,7 +96,12 @@ public class TestStippler {
             e.printStackTrace();
             throw new IllegalStateException(e);
         }
-        
+        if(s.getAll().size()<points) {
+            System.err.printf("adding %d points", points-s.getAll().size()).println();
+            for(int i=0; i<points-s.getAll().size(); i++) {
+                s.get();
+            }
+        }
         //s = new Stippler<Coordinate>(metric, generator, initRadius, tries, decay, points);
         GeometryFactory fact = new GeometryFactory();
         //MultiPoint sites = fact.createMultiPoint(s.getAll().toArray(new Coordinate[]{}));
@@ -160,12 +133,14 @@ public class TestStippler {
                     Collection<QuadEdge> edges = (Collection<QuadEdge>)subdiv.getVertexUniqueEdges(false);
                     
                     Set<Node> allNodes = new HashSet<>();
-                    
+                    Perlin precipNoise = new Perlin();
+                    precipNoise.setFrequency(0.04);
+                    precipNoise.setOctaveCount(9);
+                    precipNoise.setLacunarity(3.5);
                     edges.forEach(edge->{
                         Node.getNode(edge, c->{
                             int rank = (Integer) points(sites).stream().filter(p->{return p.getCoordinate().equals(c);}).findAny().get().getUserData();
-                            double scale = 10;
-                            double precipitation = Math.pow((1+Math.sin(c.x/scale)*Math.cos(c.y/scale))/2, 1.5);
+                            double precipitation = precipNoise.getValue(c.x, c.y, 0)*0.75+0.1;
                             return rank<sites.getNumGeometries()*precipitation?1:0;
                             //return 1;
                         });
@@ -192,13 +167,14 @@ public class TestStippler {
                             fact.createLineString(new Coordinate[]{pointGen.get(), pointGen.get()})
                     });
                     
-                    Densifier densifier = new Densifier(divideBase);
+                    /*Densifier densifier = new Densifier(divideBase);
                     densifier.setDistanceTolerance(3);
                     densifier.setInterpolator(new FractalSegmentInterpolator(ThreadLocalRandom.current(), 0.25));
                     MultiLineString divide = (MultiLineString) densifier.getResultGeometry();
                     
                     
-                    svg.draw(divide, String.format("stroke:rgb(255,0,0); stroke-width:%f;stroke-linecap:round; fill:none;", 0.25));
+                    svg.draw(divide, String.format("stroke:rgb(255,0,0); stroke-width:%f;stroke-linecap:round; fill:none;", 0.25));*/
+                    MultiLineString divide = divideBase;
                     
                     Polygon islandBase = fact.createPolygon(new Coordinate[]{
                             new Coordinate(env.getMinX()+env.getWidth()*0.10, env.getMinY()+env.getHeight()*0.30),
@@ -212,10 +188,11 @@ public class TestStippler {
                             new Coordinate(env.getMinX()+env.getWidth()*0.10, env.getMinY()+env.getHeight()*0.30)
                     });
                     
-                    densifier = new Densifier(islandBase);
+                    /*densifier = new Densifier(islandBase);
                     densifier.setDistanceTolerance(1);
                     densifier.setInterpolator(new FractalSegmentInterpolator(ThreadLocalRandom.current(), 0.2));
-                    Polygon island = (Polygon) densifier.getResultGeometry();
+                    Polygon island = (Polygon) densifier.getResultGeometry();*/
+                    Polygon island = islandBase;
                     
                     svg.draw((LineString)island.getBoundary(), "stroke:rgb(0,0,255); stroke-width:0.125;stroke-linecap:round; fill: none;");
 
@@ -247,14 +224,17 @@ public class TestStippler {
                         });
                     });
                     
-                    allNodes.forEach(node->{
-                        node.cutAdjacency(divide);
-                    });
-                    
+                    //allNodes.forEach(node->{
+                    //    node.cutAdjacency(divide);
+                    //});
+                    Perlin slopeNoise = new Perlin();
+                    slopeNoise.setFrequency(0.03);
+                    slopeNoise.setOctaveCount(10);
                     RiverModel model = new RiverModel();
                     model.setNodePreference(node->{
-                        double d = divide.distance(fact.createPoint(node.getLocation()));
-                        return 1.0-1.0/(d/20+1);
+                        //double d = divide.distance(fact.createPoint(node.getLocation()));
+                        double d=slopeNoise.getValue(node.getLocation().x, node.getLocation().y, 0);
+                        return d*0.30+0.7;
                     });
                     model.setNodes(allNodes);
 
