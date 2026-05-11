@@ -25,14 +25,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
-import com.flowpowered.noise.module.Module;
 import com.flowpowered.noise.module.source.Perlin;
 import com.vividsolutions.jts.densify.Densifier;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -48,7 +48,6 @@ import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdge;
 import com.vividsolutions.jts.triangulate.quadedge.Vertex;
 
-import ca.draconic.jtstools.JTSTools;
 import ca.draconic.stipple.river.Node;
 import ca.draconic.stipple.river.RiverModel;
 import ca.draconic.stipple.svg.SVGStream;
@@ -56,7 +55,32 @@ import ca.draconic.stipple.svg.SVGStream;
 public class TestStippler {
     
     public static Collection<Point> points(MultiPoint mp) {
-        return JTSTools.geometries(mp, Point.class);
+        return new AbstractCollection<Point>() {
+
+            @Override
+            public Iterator<Point> iterator() {
+                return new Iterator<Point>(){
+                    int n = 0;
+                    final int size = mp.getNumGeometries();
+                    @Override
+                    public boolean hasNext() {
+                        return n<size;
+                    }
+
+                    @Override
+                    public Point next() {
+                        return (Point) mp.getGeometryN(n++);
+                    }
+                    
+                };
+            }
+
+            @Override
+            public int size() {
+                return mp.getNumGeometries();
+            }
+            
+        };
     }
     
     @SuppressWarnings("unchecked")
@@ -79,19 +103,19 @@ public class TestStippler {
 
         Stippler<Coordinate> s;
         try {
-	        try(FileInputStream fin = new FileInputStream(stippleFile);
-	                ObjectInputStream oin = new ObjectInputStream(fin) ) {
-	            s=(Stippler<Coordinate>) oin.readObject();
-	        } catch (FileNotFoundException e) {
-	        	s=new Stippler<Coordinate>(metric, generator, initRadius, tries, decay, points);
-	        	for(int i=0; i<points; i++) {
-	        		s.get();
-	        	}
-	        	try(FileOutputStream fout = new FileOutputStream(stippleFile);
-	                    ObjectOutputStream oout = new ObjectOutputStream(fout) ) {
-	        		oout.writeObject(s);
-	        	}
-	        }
+            try(FileInputStream fin = new FileInputStream(stippleFile);
+                    ObjectInputStream oin = new ObjectInputStream(fin) ) {
+                s=(Stippler<Coordinate>) oin.readObject();
+            } catch (FileNotFoundException e) {
+                s=new Stippler<Coordinate>(metric, generator, initRadius, tries, decay, points);
+                for(int i=0; i<points; i++) {
+                    s.get();
+                }
+                try(FileOutputStream fout = new FileOutputStream(stippleFile);
+                        ObjectOutputStream oout = new ObjectOutputStream(fout) ) {
+                    oout.writeObject(s);
+                }
+            }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             throw new IllegalStateException(e);
