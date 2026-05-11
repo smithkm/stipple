@@ -1,5 +1,5 @@
 /*
- * (c) 2014 - 2016 Kevin Smith
+ * (c) 2014 - 2026 Kevin Smith
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,15 +23,15 @@ import java.io.Serializable;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
- * Ordinary Euclidean distance for JTS Coordinate objects 
+ * Ordinary Euclidean distance for JTS Coordinate objects
  * 
  * @author Kevin Smith, <smithkm@draconic.ca>
  *
  */
 public class EuclideanDistance implements DistanceMetric<Coordinate>, Serializable {
 
-    @Override
-    public double applyAsDouble(Coordinate c1, Coordinate c2) {
-        return c1.distance(c2);
-    }
+	@Override
+	public double applyAsDouble(Coordinate c1, Coordinate c2) {
+		return c1.distance(c2);
+	}
 }

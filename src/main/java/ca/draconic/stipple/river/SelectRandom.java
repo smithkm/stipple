@@ -1,5 +1,5 @@
 /*
- * (c) 2014 - 2016 Kevin Smith
+ * (c) 2014 - 2026 Kevin Smith
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,33 +29,37 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class SelectRandom<T> implements Collector<T, List<T>, T> {
-    int capacity;
-    
-    @Override
-    public Set<java.util.stream.Collector.Characteristics> characteristics() {
-        return Collections.emptySet();
-    }
+	int capacity;
 
-    @Override
-    public Supplier<List<T>> supplier() {
-        return ()->{return new ArrayList<>(capacity);};
-    }
+	@Override
+	public Set<java.util.stream.Collector.Characteristics> characteristics() {
+		return Collections.emptySet();
+	}
 
-    @Override
-    public BiConsumer<List<T>, T> accumulator() {
-        return (list, e)->{list.add(e);};
-    }
+	@Override
+	public Supplier<List<T>> supplier() {
+		return () -> {
+			return new ArrayList<>(capacity);
+		};
+	}
 
-    @Override
-    public BinaryOperator<List<T>> combiner() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public BiConsumer<List<T>, T> accumulator() {
+		return (list, e) -> {
+			list.add(e);
+		};
+	}
 
-    @Override
-    public Function<List<T>, T> finisher() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public BinaryOperator<List<T>> combiner() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Function<List<T>, T> finisher() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

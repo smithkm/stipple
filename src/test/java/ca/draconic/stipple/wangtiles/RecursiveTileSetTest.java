@@ -1,5 +1,5 @@
 /*
- * (c) 2014 - 2016 Kevin Smith
+ * (c) 2014 - 2026 Kevin Smith
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,19 +29,19 @@ import org.junit.Test;
 
 public class RecursiveTileSetTest {
 
-    @Test
-    public void test() {
-        Random rand = new Random();
-        
-        String[] colours = {"#FF8888", "#88FF88", "#8888FF"};//, "#FFFF44"};
-        int subtiles = 4;
-        
-        RecursiveTileSet<String> set = RecursiveTileSet.generate(colours.length, 5, subtiles, rand);
-        
-        for(Tile<String> t: set.tiles ){
-            assertThat(t, instanceOf(RecursiveTile.class));
-            assertThat(((RecursiveTile<String>)t).hasErrors(), is(0));
-        }
-    }
+	@Test
+	public void test() {
+		Random rand = new Random();
+
+		String[] colours = { "#FF8888", "#88FF88", "#8888FF" };// , "#FFFF44"};
+		int subtiles = 4;
+
+		RecursiveTileSet<String> set = RecursiveTileSet.generate(colours.length, 5, subtiles, rand);
+
+		for (Tile<String> t : set.tiles) {
+			assertThat(t, instanceOf(RecursiveTile.class));
+			assertThat(((RecursiveTile<String>) t).hasErrors(), is(0));
+		}
+	}
 
 }
